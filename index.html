@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>МАЙСТЕРНЯ — Handmade Objects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────────── */
+:root {
+  --white:   #FFFFFF;
+  --off:     #F8F7F5;
+  --stone:   #EEECE8;
+  --mist:    #E0DDD8;
+  --ink:     #0D0D0D;
+  --ink-60:  rgba(13,13,13,.6);
+  --ink-30:  rgba(13,13,13,.3);
+  --ink-10:  rgba(13,13,13,.08);
+  --accent:  #1A1A1A;
+  --pop:     #C8502A;   /* single warm accent */
+  --pop-lt:  #F2E8E4;
+  --r:       4px;
+  --r-lg:    12px;
+  --ease:    cubic-bezier(.16,1,.3,1);
+  --fast:    .18s;
+  --mid:     .36s;
+  --slow:    .64s;
+
+  --fs-xs:   .72rem;
+  --fs-sm:   .85rem;
+  --fs-base: 1rem;
+  --fs-md:   1.1rem;
+  --fs-lg:   1.4rem;
+  --fs-xl:   2rem;
+  --fs-2xl:  3rem;
+  --fs-3xl:  clamp(3.2rem,7vw,6.4rem);
+
+  --f-serif: 'DM Serif Display', Georgia, serif;
+  --f-sans:  'DM Sans', system-ui, sans-serif;
+  --f-mono:  'Space Mono', monospace;
+}
+
+/* dark */
+html.dark {
+  --white:  #111111;
+  --off:    #161616;
+  --stone:  #1E1E1E;
+  --mist:   #282828;
+  --ink:    #F0EDE8;
+  --ink-60: rgba(240,237,232,.6);
+  --ink-30: rgba(240,237,232,.28);
+  --ink-10: rgba(240,237,232,.07);
+  --pop:    #E06040;
+  --pop-lt: #2A1A14;
+  --accent: #F0EDE8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f-sans);
+  background: var(--white);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background var(--mid) var(--ease), color var(--mid) var(--ease);
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+@media(max-width:640px){ .container { padding: 0 20px; } }
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY HELPERS
+───────────────────────────────────────────── */
+.display { font-family: var(--f-serif); line-height: 1.05; letter-spacing: -.02em; }
+.mono     { font-family: var(--f-mono); font-size: var(--fs-xs); letter-spacing: .06em; }
+.label    { font-size: var(--fs-xs); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-60); font-weight: 500; }
+
+/* ─────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 26px;
+  font-family: var(--f-sans); font-size: var(--fs-sm); font-weight: 500;
+  border-radius: 100px;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast);
+  white-space: nowrap;
+}
+.btn-dark {
+  background: var(--ink); color: var(--white);
+  box-shadow: 0 0 0 0 rgba(13,13,13,0);
+}
+html.dark .btn-dark { background: var(--ink); color: #111; }
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,13,13,.22); }
+.btn-outline {
+  background: transparent; color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--mist);
+}
+.btn-outline:hover { box-shadow: inset 0 0 0 1.5px var(--ink); transform: translateY(-1px); }
+.btn-pop { background: var(--pop); color: #fff; }
+.btn-pop:hover { filter: brightness(1.08); transform: translateY(-2px); }
+
+/* icon btn */
+.ibtn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: background var(--fast);
+  position: relative;
+}
+.ibtn:hover { background: var(--stone); }
+.ibtn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+
+/* ─────────────────────────────────────────────
+   HEADER
+───────────────────────────────────────────── */
+.site-header {
+  position: fixed; inset: 0 0 auto; z-index: 100;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--ink-10);
+  transition: background var(--mid), border-color var(--mid);
+}
+html.dark .site-header { background: rgba(17,17,17,.88); }
+
+.site-header .container {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.site-logo {
+  font-family: var(--f-serif); font-size: 1.35rem; letter-spacing: -.01em;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.site-logo em { font-style: normal; color: var(--pop); }
+
+.site-nav { display: flex; gap: 6px; }
+.site-nav a {
+  padding: 6px 14px; border-radius: 100px;
+  font-size: var(--fs-sm); color: var(--ink-60);
+  transition: color var(--fast), background var(--fast);
+}
+.site-nav a:hover { color: var(--ink); background: var(--stone); }
+
+.header-r { display: flex; align-items: center; gap: 4px; }
+
+.cart-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--pop); color: #fff;
+  font-size: .55rem; font-family: var(--f-mono);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+
+/* theme toggle */
+.theme-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--fast);
+}
+.theme-btn:hover { background: var(--stone); }
+.theme-btn .t-sun, .theme-btn .t-moon { position: absolute; font-size: 1rem; transition: opacity var(--fast), transform var(--fast) var(--ease); }
+.theme-btn .t-moon { opacity: 0; transform: rotate(60deg) scale(.5); }
+html.dark .theme-btn .t-sun  { opacity: 0; transform: rotate(-60deg) scale(.5); }
+html.dark .theme-btn .t-moon { opacity: 1; transform: none; }
+
+/* mobile burger */
+.burger { display: none; flex-direction: column; gap: 4px; padding: 10px; }
+.burger span { display: block; width: 20px; height: 1.5px; background: var(--ink); border-radius: 2px; transition: var(--fast) var(--ease); }
+
+.mobile-drawer {
+  display: none;
+  position: fixed; top: 64px; inset-inline: 0; z-index: 99;
+  background: var(--white); border-bottom: 1px solid var(--ink-10);
+  flex-direction: column; padding: 12px 20px 20px;
+  transform: translateY(-8px); opacity: 0; pointer-events: none;
+  transition: var(--mid) var(--ease);
+}
+.mobile-drawer.open { transform: none; opacity: 1; pointer-events: all; }
+.mobile-drawer a { display: block; padding: 12px 0; border-bottom: 1px solid var(--ink-10); font-size: var(--fs-md); color: var(--ink-60); }
+
+@media(max-width:768px){
+  .site-nav { display: none; }
+  .burger { display: flex; }
+  .mobile-drawer { display: flex; }
+}
+
+/* ─────────────────────────────────────────────
+   HERO
+───────────────────────────────────────────── */
+.hero {
+  padding: 160px 0 100px;
+  position: relative; overflow: hidden;
+}
+
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: end;
+}
+
+.hero-left { animation: slideUp .8s var(--ease) both; }
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--stone); border-radius: 100px;
+  padding: 5px 14px 5px 8px; margin-bottom: 32px;
+}
+.hero-eyebrow-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--pop); display: flex; align-items: center; justify-content: center;
+  font-size: .6rem; color: #fff; font-family: var(--f-mono);
+}
+
+.hero-h1 {
+  font-size: var(--fs-3xl); color: var(--ink);
+  margin-bottom: 24px;
+}
+.hero-h1 em { font-style: italic; color: var(--pop); }
+
+.hero-sub {
+  font-size: var(--fs-md); color: var(--ink-60);
+  max-width: 420px; line-height: 1.75; margin-bottom: 40px;
+}
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 56px; }
+
+.hero-nums {
+  display: flex; gap: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--ink-10);
+}
+.hero-num strong { display: block; font-family: var(--f-serif); font-size: var(--fs-xl); }
+.hero-num span { font-size: var(--fs-xs); color: var(--ink-60); }
+
+/* hero right — editorial collage */
+.hero-right {
+  display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: 200px 180px 220px;
+  gap: 12px;
+  animation: slideUp .8s .15s var(--ease) both;
+}
+
+.hero-tile {
+  border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem;
+  position: relative; overflow: hidden;
+  transition: transform var(--mid) var(--ease);
+}
+.hero-tile:hover { transform: scale(1.02); }
+.hero-tile-label {
+  position: absolute; bottom: 10px; left: 10px;
+  font-size: var(--fs-xs); font-family: var(--f-mono);
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(8px);
+  padding: 3px 10px; border-radius: 100px;
+  color: #111;
+}
+.ht1 { background: #F0EBE3; grid-row: span 2; }
+.ht2 { background: #E8EEE5; }
+.ht3 { background: #EDE8F0; }
+.ht4 { background: #F0E8E5; grid-row: span 2; grid-column: 2; }
+.ht5 { background: #E5EAF0; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ─────────────────────────────────────────────
+   MARQUEE
+───────────────────────────────────────────── */
+.marquee-wrap {
+  border-top: 1px solid var(--ink-10);
+  border-bottom: 1px solid var(--ink-10);
+  padding: 14px 0; overflow: hidden;
+  background: var(--off);
+}
+.marquee-track {
+  display: flex; gap: 0; width: max-content;
+  animation: marquee 28s linear infinite;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 20px;
+  padding: 0 28px;
+  font-size: var(--fs-sm); color: var(--ink-60); white-space: nowrap;
+}
+.marquee-sep { color: var(--pop); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ─────────────────────────────────────────────
+   CATALOG
+───────────────────────────────────────────── */
+.catalog-section { padding: 96px 0 0; }
+
+.section-row {
+  display: flex; align-items: flex-end;
+  justify-content: space-between; gap: 20px;
+  margin-bottom: 40px;
+}
+.section-pretitle { margin-bottom: 8px; }
+.section-h2 { font-family: var(--f-serif); font-size: var(--fs-2xl); line-height: 1.1; }
+
+/* filter pills */
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.fpill {
+  padding: 8px 20px; border-radius: 100px;
+  font-size: var(--fs-sm); color: var(--ink-60);
+  border: 1.5px solid var(--mist);
+  transition: all var(--fast) var(--ease);
+  background: var(--white);
+}
+.fpill:hover { border-color: var(--ink); color: var(--ink); }
+.fpill.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+html.dark .fpill.on { color: #111; }
+
+/* product grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 2px;
+  border: 1px solid var(--ink-10);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+
+.prod-card {
+  background: var(--white);
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--ink-10);
+  border-bottom: 1px solid var(--ink-10);
+  transition: background var(--fast);
+  animation: fadeCard .5s var(--ease) both;
+  position: relative;
+}
+.prod-card:hover { background: var(--off); }
+
+@keyframes fadeCard {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.prod-thumb {
+  height: 220px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem; position: relative;
+  border-bottom: 1px solid var(--ink-10);
+  overflow: hidden;
+}
+.prod-thumb::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 60%, transparent 40%, rgba(13,13,13,.04));
+  pointer-events: none;
+}
+
+.prod-badge {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--pop); color: #fff;
+  font-size: var(--fs-xs); font-family: var(--f-mono);
+  padding: 3px 10px; border-radius: 100px;
+}
+.prod-wish {
+  position: absolute; top: 10px; right: 10px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--white); display: flex; align-items: center; justify-content: center;
+  font-size: .9rem; opacity: 0; transition: opacity var(--fast), transform var(--fast);
+  box-shadow: 0 2px 8px rgba(13,13,13,.1);
+}
+.prod-card:hover .prod-wish { opacity: 1; }
+.prod-wish:hover { transform: scale(1.15); }
+.prod-wish.on { opacity: 1; }
+
+.prod-info { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.prod-master { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.prod-name { font-family: var(--f-serif); font-size: 1.05rem; line-height: 1.3; }
+.prod-rating { display: flex; align-items: center; gap: 6px; }
+.prod-stars { color: #E8A020; font-size: .78rem; }
+.prod-rev { font-size: var(--fs-xs); color: var(--ink-30); }
+
+.prod-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 14px;
+  border-top: 1px solid var(--ink-10);
+}
+.prod-price { font-family: var(--f-serif); font-size: 1.15rem; }
+.prod-old { font-size: var(--fs-xs); color: var(--ink-30); text-decoration: line-through; margin-right: 4px; }
+
+.prod-add {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  background: var(--ink); color: var(--white);
+  font-size: var(--fs-xs); font-family: var(--f-mono);
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+html.dark .prod-add { color: #111; }
+.prod-add:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,13,13,.18); }
+
+/* thumb colors */
+.tc-a { background: #F0EBE3; }
+.tc-b { background: #E8EEE5; }
+.tc-c { background: #F0E8E5; }
+.tc-d { background: #EDE8F0; }
+.tc-e { background: #F0EDE3; }
+.tc-f { background: #E5EAF0; }
+
+/* ─────────────────────────────────────────────
+   PURCHASE PROCESS — HORIZONTAL VISUAL STEPS
+───────────────────────────────────────────── */
+.process-section {
+  padding: 96px 0;
+  background: #0D0D0D;
+  color: #F0EDE8;
+  position: relative; overflow: hidden;
+}
+html.dark .process-section { background: #080808; }
+
+.process-section::before {
+  content: '';
+  position: absolute; top: -1px; inset-inline: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240,237,232,.15), transparent);
+}
+
+.process-section .section-h2 { color: #F0EDE8; margin-bottom: 64px; }
+.process-section .label { color: rgba(240,237,232,.4); margin-bottom: 10px; }
+
+/* timeline */
+.process-line {
+  display: flex; align-items: flex-start; gap: 0;
+  position: relative;
+}
+.process-line::before {
+  content: '';
+  position: absolute; top: 28px; left: 28px; right: 28px; height: 1px;
+  background: rgba(240,237,232,.12);
+}
+.progress-fill {
+  position: absolute; top: 28px; left: 28px; height: 1px;
+  background: var(--pop); width: 0;
+  transition: width 1.2s var(--ease);
+}
+.progress-fill.go { width: calc(100% - 56px); }
+
+.proc-step {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 16px; cursor: pointer;
+  padding: 0 10px;
+}
+.proc-node {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(240,237,232,.07);
+  border: 1px solid rgba(240,237,232,.14);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; position: relative; z-index: 2;
+  transition: all var(--mid) var(--ease);
+}
+.proc-step.on .proc-node,
+.proc-step:hover .proc-node {
+  background: var(--pop); border-color: var(--pop);
+  box-shadow: 0 0 0 8px rgba(200,80,42,.15), 0 8px 28px rgba(200,80,42,.35);
+  transform: scale(1.08);
+}
+.proc-ico { font-size: 1.4rem; }
+.proc-n { font-family: var(--f-mono); font-size: .58rem; color: rgba(240,237,232,.35); }
+.proc-step.on .proc-n { color: rgba(255,255,255,.7); }
+
+.proc-title { font-family: var(--f-serif); font-size: .95rem; color: #F0EDE8; line-height: 1.3; }
+.proc-sub { font-size: var(--fs-xs); color: rgba(240,237,232,.38); line-height: 1.6; max-width: 120px; }
+
+/* detail card */
+.proc-detail-wrap { min-height: 110px; margin-top: 48px; }
+.proc-detail {
+  display: none;
+  background: rgba(240,237,232,.05);
+  border: 1px solid rgba(240,237,232,.1);
+  border-radius: var(--r-lg);
+  padding: 28px 32px;
+  animation: fadeIn .35s var(--ease);
+  align-items: flex-start; gap: 24px;
+}
+.proc-detail.on { display: flex; }
+.proc-detail-ico {
+  font-size: 2.2rem; flex-shrink: 0;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(200,80,42,.15);
+  display: flex; align-items: center; justify-content: center;
+}
+.proc-detail h4 { font-family: var(--f-serif); font-size: 1.1rem; color: #F0EDE8; margin-bottom: 8px; }
+.proc-detail p  { font-size: var(--fs-sm); color: rgba(240,237,232,.55); line-height: 1.8; }
+.proc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.proc-tag {
+  font-family: var(--f-mono); font-size: .68rem; color: var(--pop);
+  border: 1px solid rgba(200,80,42,.3); border-radius: 100px;
+  padding: 3px 12px;
+}
+
+/* ─────────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────────── */
+.about-section { padding: 96px 0; }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.about-visual {
+  aspect-ratio: 4/5;
+  background: var(--stone);
+  border-radius: var(--r-lg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; font-size: 5rem;
+  position: relative; overflow: hidden;
+}
+.about-visual::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 70%, rgba(200,80,42,.08), transparent 60%);
+}
+.about-visual-label {
+  font-family: var(--f-serif); font-style: italic;
+  font-size: 1.2rem; color: var(--ink-60);
+}
+
+.about-text .section-h2 { margin: 12px 0 20px; }
+.about-text p { color: var(--ink-60); line-height: 1.85; margin-bottom: 16px; font-size: var(--fs-md); }
+.about-feats { display: flex; flex-direction: column; gap: 18px; margin-top: 32px; }
+.about-feat {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px; border-radius: var(--r-lg);
+  border: 1px solid var(--ink-10);
+  transition: border-color var(--fast), background var(--fast);
+}
+.about-feat:hover { border-color: var(--ink-30); background: var(--off); }
+.about-feat-ico {
+  font-size: 1.4rem; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: var(--r);
+  background: var(--stone); display: flex; align-items: center; justify-content: center;
+}
+.about-feat strong { display: block; font-size: var(--fs-base); margin-bottom: 2px; }
+.about-feat p { font-size: var(--fs-sm); color: var(--ink-60); margin: 0; }
+
+/* ─────────────────────────────────────────────
+   MASTERS
+───────────────────────────────────────────── */
+.masters-section { padding: 0 0 96px; }
+.masters-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.master-card {
+  padding: 24px;
+  border: 1px solid var(--ink-10);
+  border-radius: var(--r-lg);
+  transition: border-color var(--fast), transform var(--fast), background var(--fast);
+  text-align: center;
+}
+.master-card:hover { border-color: var(--ink-30); transform: translateY(-4px); background: var(--off); }
+.master-av {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--stone); margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center; font-size: 2rem;
+}
+.master-name { font-family: var(--f-serif); font-size: 1rem; margin-bottom: 4px; }
+.master-spec { font-size: var(--fs-xs); color: var(--ink-60); font-family: var(--f-mono); }
+.master-cnt  { font-size: var(--fs-xs); color: var(--ink-30); margin-top: 6px; }
+
+/* ─────────────────────────────────────────────
+   HOW
+───────────────────────────────────────────── */
+.how-section {
+  padding: 96px 0;
+  background: var(--off);
+  border-top: 1px solid var(--ink-10);
+  border-bottom: 1px solid var(--ink-10);
+}
+.how-steps { display: flex; align-items: stretch; gap: 1px; background: var(--ink-10); border-radius: var(--r-lg); overflow: hidden; }
+.how-step {
+  flex: 1; padding: 36px 28px;
+  background: var(--off);
+  transition: background var(--fast);
+}
+.how-step:hover { background: var(--white); }
+.how-num { font-family: var(--f-mono); font-size: 2.2rem; color: var(--ink-10); margin-bottom: 16px; font-weight: 700; }
+.how-ico { font-size: 2rem; margin-bottom: 12px; }
+.how-step h3 { font-family: var(--f-serif); font-size: 1.05rem; margin-bottom: 8px; }
+.how-step p  { font-size: var(--fs-sm); color: var(--ink-60); line-height: 1.75; }
+
+/* ─────────────────────────────────────────────
+   REVIEWS
+───────────────────────────────────────────── */
+.reviews-section { padding: 96px 0; }
+
+.rating-bar-wrap {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 48px; align-items: center;
+  padding: 32px 36px;
+  border: 1px solid var(--ink-10); border-radius: var(--r-lg);
+  margin-bottom: 40px; background: var(--off);
+}
+.rb-score { text-align: center; }
+.rb-big { font-family: var(--f-serif); font-size: 3.6rem; line-height: 1; }
+.rb-stars { color: #E8A020; font-size: 1rem; margin: 6px 0; letter-spacing: 2px; }
+.rb-count { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.rb-bars { display: flex; flex-direction: column; gap: 7px; }
+.rb-row { display: flex; align-items: center; gap: 10px; font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-30); }
+.rb-row span:first-child { width: 28px; text-align: right; }
+.rb-track { flex: 1; height: 4px; background: var(--mist); border-radius: 2px; overflow: hidden; }
+.rb-fill { height: 100%; background: var(--ink); border-radius: 2px; transition: width 1.2s var(--ease); }
+.rb-pct { width: 30px; }
+.rb-action { text-align: center; }
+.rb-action p { font-size: var(--fs-sm); color: var(--ink-60); margin-bottom: 14px; }
+
+/* filter row */
+.rv-pills { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.rv-pill {
+  padding: 6px 16px; border-radius: 100px; font-size: var(--fs-xs);
+  font-family: var(--f-mono); border: 1.5px solid var(--mist);
+  color: var(--ink-60); transition: all var(--fast);
+}
+.rv-pill:hover, .rv-pill.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+html.dark .rv-pill.on { color: #111; }
+
+/* review cards */
+.rv-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.rv-card {
+  padding: 24px;
+  border: 1px solid var(--ink-10); border-radius: var(--r-lg);
+  display: flex; flex-direction: column; gap: 12px;
+  transition: border-color var(--fast), transform var(--fast), background var(--fast);
+  animation: fadeCard .4s var(--ease) both;
+}
+.rv-card:hover { border-color: var(--ink-30); transform: translateY(-3px); background: var(--off); }
+.rv-card.featured { background: #0D0D0D; border-color: #0D0D0D; color: #F0EDE8; }
+html.dark .rv-card.featured { background: #1A1A1A; border-color: #1A1A1A; }
+.rv-card.featured:hover { border-color: var(--pop); transform: translateY(-3px); }
+.rv-card.new-rv { border-color: var(--pop); }
+
+.rv-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rv-stars { color: #E8A020; font-size: .82rem; letter-spacing: 1px; }
+.rv-card.featured .rv-stars { color: #D4A040; }
+.rv-badge {
+  font-family: var(--f-mono); font-size: .6rem; color: var(--pop);
+  border: 1px solid rgba(200,80,42,.3); border-radius: 100px; padding: 2px 8px;
+}
+.rv-card.featured .rv-badge { color: #D4A040; border-color: rgba(212,160,64,.3); }
+
+.rv-product {
+  font-family: var(--f-mono); font-size: .65rem; color: var(--ink-30);
+  background: var(--stone); border-radius: 100px; padding: 3px 10px;
+  display: inline-block; width: fit-content;
+}
+.rv-card.featured .rv-product { background: rgba(240,237,232,.1); color: rgba(240,237,232,.5); }
+
+.rv-text { font-size: var(--fs-sm); color: var(--ink-60); line-height: 1.8; flex: 1; font-style: italic; }
+.rv-card.featured .rv-text { color: rgba(240,237,232,.7); }
+
+.rv-author { display: flex; align-items: center; gap: 10px; margin-top: auto; }
+.rv-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--stone); display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.rv-card.featured .rv-av { background: rgba(240,237,232,.12); }
+.rv-ainfo strong { display: block; font-size: var(--fs-sm); }
+.rv-ainfo span   { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.rv-card.featured .rv-ainfo span { color: rgba(240,237,232,.35); }
+.rv-date { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.rv-card.featured .rv-date { color: rgba(240,237,232,.3); }
+.rv-like {
+  margin-left: auto; display: flex; align-items: center; gap: 4px;
+  font-size: var(--fs-xs); font-family: var(--f-mono);
+  padding: 3px 10px; border-radius: 100px; border: 1px solid var(--ink-10);
+  color: var(--ink-30); transition: all var(--fast);
+}
+.rv-like:hover, .rv-like.on { color: var(--pop); border-color: rgba(200,80,42,.3); }
+.rv-card.featured .rv-like { border-color: rgba(240,237,232,.12); color: rgba(240,237,232,.3); }
+
+/* ─────────────────────────────────────────────
+   FAQ
+───────────────────────────────────────────── */
+.faq-section { padding: 0 0 96px; background: var(--off); }
+.faq-wrap { padding-top: 80px; }
+.faq-layout { display: grid; grid-template-columns: 300px 1fr; gap: 60px; align-items: start; }
+.faq-aside { position: sticky; top: 80px; }
+.faq-aside p { color: var(--ink-60); font-size: var(--fs-sm); margin: 12px 0 24px; line-height: 1.75; }
+.faq-cats { display: flex; flex-direction: column; gap: 4px; margin-top: 20px; }
+.faq-cat {
+  padding: 9px 14px; border-radius: var(--r);
+  font-size: var(--fs-sm); color: var(--ink-60);
+  text-align: left; transition: all var(--fast);
+}
+.faq-cat:hover { background: var(--stone); color: var(--ink); }
+.faq-cat.on { background: var(--ink); color: var(--white); }
+html.dark .faq-cat.on { color: #111; }
+
+.faq-list { display: flex; flex-direction: column; border-top: 1px solid var(--ink-10); }
+.faq-item { border-bottom: 1px solid var(--ink-10); }
+.faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; padding: 20px 0; text-align: left;
+  font-size: var(--fs-base); font-family: var(--f-serif); color: var(--ink);
+  transition: color var(--fast);
+}
+.faq-q:hover { color: var(--pop); }
+.faq-item.open .faq-q { color: var(--pop); }
+.faq-icon {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  border: 1px solid var(--mist); display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; color: var(--ink-60);
+  transition: transform var(--mid) var(--ease), background var(--fast), border-color var(--fast);
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--pop); border-color: var(--pop); color: #fff; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .4s var(--ease); }
+.faq-item.open .faq-a { max-height: 300px; }
+.faq-a-in { padding: 0 0 20px; font-size: var(--fs-sm); color: var(--ink-60); line-height: 1.85; }
+
+/* ─────────────────────────────────────────────
+   AUTO LAYOUT
+───────────────────────────────────────────── */
+.al-section { padding: 96px 0; }
+.al-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.al-pill {
+  padding: 7px 16px; border-radius: 100px; font-size: var(--fs-xs); font-family: var(--f-mono);
+  border: 1.5px solid var(--mist); color: var(--ink-60);
+  display: flex; align-items: center; gap: 6px;
+  transition: all var(--fast);
+}
+.al-pill:hover, .al-pill.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+html.dark .al-pill.on { color: #111; }
+
+.al-grid { display: grid; gap: 12px; transition: all .4s var(--ease); }
+.al-grid.m-masonry { grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+.al-grid.m-feat    { grid-template-columns: repeat(4,1fr); }
+.al-grid.m-feat .al-c:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.al-grid.m-3  { grid-template-columns: repeat(3,1fr); }
+.al-grid.m-2  { grid-template-columns: repeat(2,1fr); }
+.al-grid.m-1  { grid-template-columns: 1fr; }
+
+.al-c {
+  background: var(--off); border: 1px solid var(--ink-10); border-radius: var(--r-lg);
+  overflow: hidden; transition: transform var(--fast), border-color var(--fast);
+  animation: fadeCard .35s var(--ease) both;
+}
+.al-c:hover { transform: translateY(-3px); border-color: var(--ink-30); }
+.al-thumb { display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.m-1 .al-thumb { display: none; }
+.m-feat .al-c:nth-child(1) .al-thumb { height: 260px; font-size: 5rem; }
+.m-masonry .al-thumb, .m-3 .al-thumb, .m-2 .al-thumb { height: 140px; }
+.m-feat .al-thumb { height: 130px; }
+.al-body { padding: 14px 16px; }
+.al-name { font-family: var(--f-serif); font-size: .9rem; }
+.al-price { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--ink-60); margin-top: 4px; }
+
+.m-1 .al-c { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+.m-1 .al-body { display: flex; justify-content: space-between; align-items: center; padding: 16px; }
+
+.al-footer {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--off); border: 1px solid var(--ink-10);
+  border-radius: var(--r-lg); margin-top: 16px;
+}
+.al-stat strong { font-family: var(--f-mono); font-size: .9rem; }
+.al-stat span { font-size: var(--fs-xs); color: var(--ink-60); display: block; }
+
+/* ─────────────────────────────────────────────
+   NEWSLETTER
+───────────────────────────────────────────── */
+.nl-section {
+  padding: 80px 0;
+  background: #0D0D0D;
+  text-align: center;
+}
+html.dark .nl-section { background: #080808; }
+.nl-section .label { color: rgba(240,237,232,.35); margin-bottom: 14px; }
+.nl-section h2 { font-family: var(--f-serif); font-size: var(--fs-2xl); color: #F0EDE8; margin-bottom: 10px; }
+.nl-section h2 em { font-style: italic; color: var(--pop); }
+.nl-section p { color: rgba(240,237,232,.5); font-size: var(--fs-sm); margin-bottom: 32px; }
+.nl-form { display: flex; gap: 8px; justify-content: center; max-width: 440px; margin: 0 auto; }
+.nl-form input {
+  flex: 1; padding: 12px 20px; border-radius: 100px;
+  border: 1px solid rgba(240,237,232,.15); background: rgba(240,237,232,.07);
+  color: #F0EDE8; font-family: var(--f-sans); font-size: var(--fs-sm);
+  transition: border-color var(--fast);
+}
+.nl-form input::placeholder { color: rgba(240,237,232,.3); }
+.nl-form input:focus { outline: none; border-color: rgba(240,237,232,.35); }
+
+/* ─────────────────────────────────────────────
+   CONTACT
+───────────────────────────────────────────── */
+.contact-section { padding: 96px 0; }
+.contact-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; align-items: start; }
+.contact-info { display: flex; flex-direction: column; gap: 24px; }
+.c-item { display: flex; gap: 14px; }
+.c-ico {
+  width: 40px; height: 40px; border-radius: var(--r); flex-shrink: 0;
+  background: var(--stone); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.c-item strong { display: block; font-size: var(--fs-sm); margin-bottom: 2px; }
+.c-item p { font-size: var(--fs-sm); color: var(--ink-60); margin: 0; }
+.c-form { display: flex; flex-direction: column; gap: 12px; }
+.c-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.c-form input, .c-form textarea {
+  width: 100%; padding: 12px 16px; border-radius: var(--r-lg);
+  border: 1.5px solid var(--mist); background: var(--white);
+  font-family: var(--f-sans); font-size: var(--fs-sm); color: var(--ink);
+  transition: border-color var(--fast), box-shadow var(--fast);
+  resize: vertical;
+}
+.c-form input:focus, .c-form textarea:focus {
+  outline: none; border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--ink-10);
+}
+.c-form input.err { border-color: var(--pop); }
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+.site-footer {
+  background: var(--off);
+  border-top: 1px solid var(--ink-10);
+  padding: 60px 0 0;
+}
+.footer-grid { display: grid; grid-template-columns: 1.3fr 2fr; gap: 60px; padding-bottom: 48px; }
+.footer-brand p { font-size: var(--fs-sm); color: var(--ink-60); margin: 14px 0 22px; max-width: 260px; line-height: 1.75; }
+.socials { display: flex; gap: 8px; }
+.soc-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--mist); display: flex; align-items: center; justify-content: center;
+  color: var(--ink-60); transition: all var(--fast);
+}
+.soc-btn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.soc-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+html.dark .soc-btn:hover { color: #111; }
+
+.footer-links { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; }
+.fc h4 { font-size: var(--fs-sm); font-weight: 600; margin-bottom: 16px; }
+.fc a { display: block; font-size: var(--fs-sm); color: var(--ink-60); margin-bottom: 10px; transition: color var(--fast); }
+.fc a:hover { color: var(--ink); }
+
+.footer-bar {
+  border-top: 1px solid var(--ink-10); padding: 18px 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-bar p { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+
+/* ─────────────────────────────────────────────
+   CART DRAWER
+───────────────────────────────────────────── */
+.cart-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(13,13,13,.4); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity var(--mid);
+}
+.cart-overlay.on { opacity: 1; pointer-events: all; }
+.cart-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: 380px; background: var(--white);
+  border-left: 1px solid var(--ink-10);
+  display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform .38s var(--ease);
+  box-shadow: -20px 0 60px rgba(13,13,13,.12);
+}
+.cart-drawer.on { transform: none; }
+.cart-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; border-bottom: 1px solid var(--ink-10);
+}
+.cart-head h3 { font-family: var(--f-serif); font-size: 1.2rem; }
+.cart-body { flex: 1; overflow-y: auto; padding: 12px; }
+.cart-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 200px; gap: 10px;
+  color: var(--ink-30); font-family: var(--f-mono); font-size: var(--fs-xs);
+}
+.cart-empty span { font-size: 2.4rem; }
+.ci {
+  display: flex; gap: 12px; align-items: center;
+  padding: 10px 12px; border-radius: var(--r-lg);
+  background: var(--off); margin-bottom: 6px;
+}
+.ci-thumb { font-size: 1.8rem; }
+.ci-info { flex: 1; }
+.ci-name  { font-size: var(--fs-sm); font-family: var(--f-serif); line-height: 1.3; }
+.ci-price { font-size: var(--fs-xs); color: var(--pop); font-family: var(--f-mono); margin-top: 2px; }
+.ci-rm { color: var(--ink-30); font-size: .9rem; transition: color var(--fast); }
+.ci-rm:hover { color: var(--pop); }
+.cart-foot { padding: 16px 24px 24px; border-top: 1px solid var(--ink-10); }
+.cart-tot { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.cart-tot span { font-size: var(--fs-sm); color: var(--ink-60); }
+.cart-tot strong { font-family: var(--f-serif); font-size: 1.25rem; }
+
+/* ─────────────────────────────────────────────
+   CHECKOUT MODAL
+───────────────────────────────────────────── */
+.ck-modal {
+  position: fixed; inset: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity var(--mid);
+}
+.ck-modal.on { opacity: 1; pointer-events: all; }
+.ck-ov { position: absolute; inset: 0; background: rgba(13,13,13,.5); backdrop-filter: blur(6px); }
+.ck-box {
+  position: relative; z-index: 1;
+  background: var(--white); border-radius: 20px;
+  width: 100%; max-width: 640px; max-height: 92vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 40px 80px rgba(13,13,13,.28);
+  transform: translateY(24px) scale(.98); transition: transform .4s var(--ease);
+}
+.ck-modal.on .ck-box { transform: none; }
+
+/* progress */
+.ck-prog { display: flex; align-items: center; padding: 20px 28px 16px; border-bottom: 1px solid var(--ink-10); }
+.ck-dot { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
+.ck-dot:not(:last-child)::after {
+  content: ''; position: absolute; top: 15px; left: calc(50% + 16px); right: calc(-50% + 16px);
+  height: 1px; background: var(--mist); transition: background .4s;
+}
+.ck-dot.done:not(:last-child)::after { background: var(--ink); }
+.ck-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid var(--mist); background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-mono); font-size: .7rem; color: var(--ink-30);
+  position: relative; z-index: 1; transition: all .3s var(--ease);
+}
+.ck-dot.active .ck-circle { background: var(--ink); border-color: var(--ink); color: var(--white); box-shadow: 0 0 0 4px var(--ink-10); }
+html.dark .ck-dot.active .ck-circle { color: #111; }
+.ck-dot.done .ck-circle { background: var(--pop); border-color: var(--pop); color: #fff; }
+.ck-dlabel { font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-30); white-space: nowrap; }
+.ck-dot.active .ck-dlabel { color: var(--ink); }
+
+.ck-hd { display: flex; justify-content: space-between; align-items: center; padding: 14px 28px 0; }
+.ck-hd h3 { font-family: var(--f-serif); font-size: 1.2rem; }
+.ck-close { width: 30px; height: 30px; border-radius: var(--r); display: flex; align-items: center; justify-content: center; color: var(--ink-60); font-size: 1rem; transition: background var(--fast); }
+.ck-close:hover { background: var(--stone); }
+
+.ck-body { flex: 1; overflow-y: auto; padding: 16px 28px 20px; }
+.ck-panel { display: none; animation: fadeIn .3s var(--ease); }
+.ck-panel.on { display: block; }
+
+/* step 1 – cart */
+.ck-items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.ck-row {
+  display: grid; grid-template-columns: 40px 1fr auto auto;
+  align-items: center; gap: 10px;
+  padding: 10px 12px; background: var(--off); border-radius: var(--r-lg);
+}
+.ck-em { font-size: 1.6rem; text-align: center; }
+.ck-nm { font-family: var(--f-serif); font-size: .85rem; line-height: 1.3; }
+.ck-ms { font-size: .65rem; color: var(--ink-30); font-family: var(--f-mono); }
+.ck-qty { display: flex; align-items: center; gap: 6px; }
+.ck-qb {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--mist); display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; color: var(--ink-60); transition: all var(--fast);
+}
+.ck-qb:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+html.dark .ck-qb:hover { color: #111; }
+.ck-qn { font-family: var(--f-mono); font-size: .8rem; min-width: 14px; text-align: center; }
+.ck-pr { font-family: var(--f-mono); font-size: .85rem; color: var(--pop); white-space: nowrap; }
+
+.ck-sum { background: var(--off); border-radius: var(--r-lg); padding: 14px 16px; }
+.ck-sr { display: flex; justify-content: space-between; font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-60); margin-bottom: 6px; }
+.ck-sr.tot { font-size: .9rem; color: var(--ink); border-top: 1px solid var(--mist); padding-top: 8px; margin-top: 4px; margin-bottom: 0; }
+
+/* step 2 */
+.ck-section { margin-bottom: 18px; }
+.ck-stitle { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--ink-30); letter-spacing: .1em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.ck-fr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ck-f { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.ck-f label { font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-30); }
+.ck-f input, .ck-f select, .ck-f textarea {
+  width: 100%; padding: 10px 13px; border-radius: var(--r-lg);
+  border: 1.5px solid var(--mist); background: var(--white);
+  font-family: var(--f-sans); font-size: var(--fs-sm); color: var(--ink);
+  transition: border-color var(--fast);
+}
+.ck-f input:focus, .ck-f select:focus, .ck-f textarea:focus { outline: none; border-color: var(--ink); }
+.ck-f input.err { border-color: var(--pop); }
+
+.ck-dels { display: flex; flex-direction: column; gap: 6px; }
+.ck-del {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border: 1.5px solid var(--mist); border-radius: var(--r-lg);
+  cursor: pointer; transition: all var(--fast);
+}
+.ck-del:hover { border-color: var(--ink-60); }
+.ck-del.on { border-color: var(--ink); background: var(--off); }
+.ck-del input[type=radio] { accent-color: var(--ink); width: 15px; height: 15px; flex-shrink: 0; }
+.ck-del-ico { font-size: 1.2rem; }
+.ck-del-info { flex: 1; }
+.ck-del-name { font-size: var(--fs-sm); font-weight: 500; }
+.ck-del-desc { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.ck-del-price { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--ink); }
+
+/* step 3 */
+.ck-pays { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.ck-pay {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border: 1.5px solid var(--mist); border-radius: var(--r-lg);
+  cursor: pointer; transition: all var(--fast);
+}
+.ck-pay:hover { border-color: var(--ink-60); }
+.ck-pay.on { border-color: var(--ink); background: var(--off); }
+.ck-pay input[type=radio] { accent-color: var(--ink); width: 15px; height: 15px; flex-shrink: 0; }
+.ck-pay-ico { font-size: 1.3rem; }
+.ck-pay-name { font-size: var(--fs-sm); font-weight: 500; }
+.ck-pay-desc { font-size: var(--fs-xs); color: var(--ink-30); font-family: var(--f-mono); }
+.ck-card-f { display: none; }
+.ck-card-f.on { display: block; animation: fadeIn .28s var(--ease); }
+.ck-card-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
+
+.ck-final { background: var(--off); border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 12px; }
+.ck-final-r { display: flex; justify-content: space-between; font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-60); margin-bottom: 5px; }
+.ck-final-r.big { font-size: .85rem; color: var(--ink); border-top: 1px solid var(--mist); padding-top: 8px; margin-top: 6px; margin-bottom: 0; }
+
+.ck-ft { display: flex; justify-content: space-between; align-items: center; padding: 12px 28px 20px; border-top: 1px solid var(--ink-10); }
+.ck-back { font-size: var(--fs-sm); color: var(--ink-60); display: flex; align-items: center; gap: 4px; transition: color var(--fast); }
+.ck-back:hover { color: var(--ink); }
+
+/* success */
+.ck-success { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 32px; gap: 14px; }
+.ck-success.on { display: flex; animation: fadeIn .5s var(--ease); }
+.ck-success-ico {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--ink); color: var(--white);
+  display: flex; align-items: center; justify-content: center; font-size: 2rem;
+  animation: popIn .5s var(--ease) both;
+}
+html.dark .ck-success-ico { color: #111; }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ck-success h3 { font-family: var(--f-serif); font-size: 1.5rem; }
+.ck-success p { font-size: var(--fs-sm); color: var(--ink-60); max-width: 340px; line-height: 1.8; }
+.ck-order-num { font-family: var(--f-mono); font-size: .8rem; background: var(--stone); padding: 6px 16px; border-radius: 100px; color: var(--ink); }
+
+/* ─────────────────────────────────────────────
+   REVIEW MODAL
+───────────────────────────────────────────── */
+.rv-modal {
+  position: fixed; inset: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity var(--mid);
+}
+.rv-modal.on { opacity: 1; pointer-events: all; }
+.rv-ov { position: absolute; inset: 0; background: rgba(13,13,13,.5); backdrop-filter: blur(6px); }
+.rv-box {
+  position: relative; z-index: 1; background: var(--white); border-radius: 20px;
+  width: 100%; max-width: 520px; max-height: 90vh; display: flex; flex-direction: column;
+  box-shadow: 0 40px 80px rgba(13,13,13,.28);
+  transform: translateY(20px) scale(.98); transition: transform .4s var(--ease); overflow: hidden;
+}
+.rv-modal.on .rv-box { transform: none; }
+.rv-mh { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--ink-10); }
+.rv-mh h3 { font-family: var(--f-serif); font-size: 1.15rem; }
+.rv-mb { flex: 1; overflow-y: auto; padding: 16px 24px; }
+.rv-mf { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px 18px; border-top: 1px solid var(--ink-10); }
+
+/* star picker */
+.sp-wrap { display: flex; gap: 4px; margin-bottom: 4px; }
+.sp-s { font-size: 1.8rem; color: var(--mist); cursor: pointer; transition: color .15s, transform .15s; user-select: none; }
+.sp-s.hov, .sp-s.on { color: #E8A020; transform: scale(1.2); }
+.sp-lbl { font-size: var(--fs-xs); font-family: var(--f-mono); color: var(--ink-30); min-height: 16px; }
+
+/* emoji picker */
+.ep-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+.ep-e {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; cursor: pointer;
+  border: 1.5px solid transparent; transition: all var(--fast);
+}
+.ep-e:hover { border-color: var(--mist); background: var(--stone); }
+.ep-e.on { border-color: var(--ink); background: var(--stone); }
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; z-index: 500;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--ink); color: var(--white);
+  padding: 10px 20px; border-radius: 100px;
+  font-size: var(--fs-xs); font-family: var(--f-mono);
+  opacity: 0; transition: all var(--mid) var(--ease); pointer-events: none; white-space: nowrap;
+}
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+html.dark .toast { color: #111; }
+
+/* ─────────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.reveal.vis { opacity: 1; transform: none; }
+
+/* ─────────────────────────────────────────────
+   UTILS & ANIMATIONS
+───────────────────────────────────────────── */
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media(max-width:960px){
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .faq-layout { grid-template-columns: 1fr; }
+  .faq-aside { position: static; }
+  .masters-grid { grid-template-columns: repeat(2,1fr); }
+  .rv-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+@media(max-width:640px){
+  .hero { padding: 120px 0 60px; }
+  .section-row { flex-direction: column; align-items: flex-start; }
+  .how-steps { flex-direction: column; gap: 1px; }
+  .rv-grid { grid-template-columns: 1fr; }
+  .rating-bar-wrap { grid-template-columns: 1fr; }
+  .cart-drawer { width: 100%; }
+  .nl-form { flex-direction: column; }
+  .c-row { grid-template-columns: 1fr; }
+  .masters-grid { grid-template-columns: repeat(2,1fr); }
+  .process-line { overflow-x: auto; gap: 8px; padding-bottom: 12px; }
+  .process-line::before, .progress-fill { display: none; }
+  .footer-links { grid-template-columns: 1fr 1fr; }
+  .al-grid.m-feat,.al-grid.m-3,.al-grid.m-2 { grid-template-columns: 1fr; }
+  .al-grid.m-feat .al-c:nth-child(1) { grid-column: span 1; }
+  .proc-detail.on { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="container">
+    <a href="#" class="site-logo">МАЙСТЕР<em>НЯ</em></a>
+    <nav class="site-nav">
+      <a href="#catalog">Каталог</a>
+      <a href="#process">Як купити</a>
+      <a href="#about">Про нас</a>
+      <a href="#reviews">Відгуки</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Контакти</a>
+    </nav>
+    <div class="header-r">
+      <button class="theme-btn ibtn" id="themeBtn" aria-label="Тема" style="position:relative">
+        <span class="t-sun">☀️</span>
+        <span class="t-moon">🌙</span>
+      </button>
+      <button class="ibtn" id="cartBtn" aria-label="Кошик" style="position:relative">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-dot" id="cartDot">0</span>
+      </button>
+      <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-drawer" id="mobileDrawer">
+  <a href="#catalog">Каталог</a>
+  <a href="#process">Як купити</a>
+  <a href="#about">Про нас</a>
+  <a href="#reviews">Відгуки</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact">Контакти</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot">UA</div>
+        <span class="label" style="color:var(--ink-60);text-transform:none;letter-spacing:.04em;font-size:.78rem">Handmade від майстрів України</span>
+      </div>
+      <h1 class="hero-h1 display">Речі,<br>зроблені<br><em>з душею</em></h1>
+      <p class="hero-sub">Унікальні вироби ручної роботи — кераміка, в'язання, декор, прикраси та живопис від перевірених українських майстрів.</p>
+      <div class="hero-actions">
+        <a href="#catalog" class="btn btn-dark">Переглянути каталог</a>
+        <a href="#about" class="btn btn-outline">Дізнатись більше</a>
+      </div>
+      <div class="hero-nums">
+        <div class="hero-num"><strong class="display">200+</strong><span>товарів</span></div>
+        <div class="hero-num"><strong class="display">50+</strong><span>майстрів</span></div>
+        <div class="hero-num"><strong class="display">1000+</strong><span>клієнтів</span></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-tile ht1"><span>🏺</span><div class="hero-tile-label">кераміка</div></div>
+      <div class="hero-tile ht2"><span>🧶</span><div class="hero-tile-label">в'язання</div></div>
+      <div class="hero-tile ht3"><span>📿</span><div class="hero-tile-label">прикраси</div></div>
+      <div class="hero-tile ht4"><span>🎨</span><div class="hero-tile-label">живопис</div></div>
+      <div class="hero-tile ht5"><span>🕯️</span><div class="hero-tile-label">декор</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MARQUEE ═══ -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="mqTrack"></div>
+</div>
+
+<!-- ═══ CATALOG ═══ -->
+<section class="catalog-section container" id="catalog">
+  <div class="section-row reveal">
+    <div>
+      <p class="label section-pretitle">Каталог</p>
+      <h2 class="section-h2 display">Всі товари</h2>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <button class="fpill on" data-f="all">Всі</button>
+      <button class="fpill" data-f="ceramic">🏺 Кераміка</button>
+      <button class="fpill" data-f="knit">🧶 В'язання</button>
+      <button class="fpill" data-f="decor">🕯️ Декор</button>
+      <button class="fpill" data-f="jewelry">📿 Прикраси</button>
+      <button class="fpill" data-f="art">🎨 Живопис</button>
+      <button class="fpill" data-f="wood">🪵 Дерево</button>
+    </div>
+  </div>
+  <div class="products-grid" id="prodGrid"></div>
+</section>
+
+<!-- ═══ PROCESS ═══ -->
+<section class="process-section" id="process">
+  <div class="container">
+    <p class="label section-pretitle" style="color:rgba(240,237,232,.35)">Від вибору до доставки</p>
+    <h2 class="section-h2 display reveal" style="color:#F0EDE8;margin-bottom:56px">Процес<br>придбання</h2>
+
+    <div class="process-line" id="procLine">
+      <div class="progress-fill" id="procFill"></div>
+      <div class="proc-step on" data-i="0">
+        <div class="proc-node"><div class="proc-ico">🔍</div><div class="proc-n">01</div></div>
+        <div class="proc-title">Пошук</div>
+        <div class="proc-sub">Фільтр по категоріях та рейтингу</div>
+      </div>
+      <div class="proc-step" data-i="1">
+        <div class="proc-node"><div class="proc-ico">🛒</div><div class="proc-n">02</div></div>
+        <div class="proc-title">Кошик</div>
+        <div class="proc-sub">Один клік, кілька майстрів</div>
+      </div>
+      <div class="proc-step" data-i="2">
+        <div class="proc-node"><div class="proc-ico">📋</div><div class="proc-n">03</div></div>
+        <div class="proc-title">Оформлення</div>
+        <div class="proc-sub">Адреса та спосіб доставки</div>
+      </div>
+      <div class="proc-step" data-i="3">
+        <div class="proc-node"><div class="proc-ico">💳</div><div class="proc-n">04</div></div>
+        <div class="proc-title">Оплата</div>
+        <div class="proc-sub">Картка або накладений платіж</div>
+      </div>
+      <div class="proc-step" data-i="4">
+        <div class="proc-node"><div class="proc-ico">📦</div><div class="proc-n">05</div></div>
+        <div class="proc-title">Доставка</div>
+        <div class="proc-sub">Нова Пошта або кур'єр</div>
+      </div>
+    </div>
+
+    <div class="proc-detail-wrap">
+      <div class="proc-detail on" id="pd0"><div class="proc-detail-ico">🔍</div><div><h4>Пошук та вибір товару</h4><p>Фільтруй по категоріях, переглядай рейтинги майстрів. Додавай до обраних та порівнюй. Усі товари з реальними фото та описами від самих авторів.</p><div class="proc-tags"><span class="proc-tag">Фільтри</span><span class="proc-tag">Вибране ❤️</span><span class="proc-tag">Рейтинги</span></div></div></div>
+      <div class="proc-detail" id="pd1"><div class="proc-detail-ico">🛒</div><div><h4>Додання до кошика</h4><p>Натисни «В кошик» — товар миттєво з'являється в боковій панелі. Зміни кількість або видали будь-який товар прямо в кошику перед оформленням.</p><div class="proc-tags"><span class="proc-tag">Декілька товарів</span><span class="proc-tag">Різні майстри</span><span class="proc-tag">Зміна кількості</span></div></div></div>
+      <div class="proc-detail" id="pd2"><div class="proc-detail-ico">📋</div><div><h4>Оформлення замовлення</h4><p>Вкажи контактні дані та обери спосіб доставки: Нова Пошта, Укрпошта, кур'єр або самовивіз. Залиш коментар майстру щодо побажань.</p><div class="proc-tags"><span class="proc-tag">Нова Пошта</span><span class="proc-tag">Укрпошта</span><span class="proc-tag">Кур'єр</span><span class="proc-tag">Самовивіз</span></div></div></div>
+      <div class="proc-detail" id="pd3"><div class="proc-detail-ico">💳</div><div><h4>Безпечна оплата</h4><p>Visa/MasterCard через LiqPay з SSL-шифруванням, або накладений платіж при отриманні. Також переказ через monobank та ПриватБанк.</p><div class="proc-tags"><span class="proc-tag">Visa / MC</span><span class="proc-tag">Накладений</span><span class="proc-tag">monobank 📱</span><span class="proc-tag">Захищено 🔒</span></div></div></div>
+      <div class="proc-detail" id="pd4"><div class="proc-detail-ico">📦</div><div><h4>Доставка та отримання</h4><p>Майстер відправляє протягом 1–3 днів. Ти отримуєш SMS з трек-номером і відстежуєш посилку онлайн. Бережне авторське пакування включено.</p><div class="proc-tags"><span class="proc-tag">Трекінг</span><span class="proc-tag">1–3 дні відправка</span><span class="proc-tag">Авторське пакування 🎁</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="about-section container" id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal">
+      <span style="font-size:6rem">🏡</span>
+      <div class="about-visual-label">Зроблено з душею</div>
+    </div>
+    <div class="about-text reveal">
+      <p class="label">Про Майстерню</p>
+      <h2 class="section-h2 display">Місце, де<br>народжуються<br><em>речі</em></h2>
+      <p>Майстерня — це онлайн-простір для українських митців та ремісників, де кожна річ має свою душу та історію.</p>
+      <p>Купуючи у нас, ти підтримуєш українських творців та отримуєш унікальний виріб, якого більше немає у світі.</p>
+      <div class="about-feats">
+        <div class="about-feat reveal"><div class="about-feat-ico">🤝</div><div><strong>Прямо від майстра</strong><p>Без посередників — напряму від творця</p></div></div>
+        <div class="about-feat reveal"><div class="about-feat-ico">✦</div><div><strong>100% унікальність</strong><p>Кожен виріб ексклюзивний і не повторюється</p></div></div>
+        <div class="about-feat reveal"><div class="about-feat-ico">🇺🇦</div><div><strong>Підтримка України</strong><p>Купуємо українське — підтримуємо своїх</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MASTERS ═══ -->
+<section class="masters-section container" id="masters">
+  <div class="section-row reveal"><div><p class="label section-pretitle">Творці</p><h2 class="section-h2 display">Наші майстри</h2></div></div>
+  <div class="masters-grid" id="mastersGrid"></div>
+</section>
+
+<!-- ═══ HOW ═══ -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-row reveal" style="margin-bottom:32px"><div><p class="label section-pretitle">Просто та зручно</p><h2 class="section-h2 display">Як це працює</h2></div></div>
+    <div class="how-steps">
+      <div class="how-step reveal"><div class="how-num">01</div><div class="how-ico">🔍</div><h3>Обираєш товар</h3><p>Переглядай каталог, фільтруй за категоріями та знаходь те, що тебе зачіпає</p></div>
+      <div class="how-step reveal"><div class="how-num">02</div><div class="how-ico">🛒</div><h3>Додаєш до кошика</h3><p>Вибрав — додай до кошика. Можна обрати кілька товарів від різних майстрів</p></div>
+      <div class="how-step reveal"><div class="how-num">03</div><div class="how-ico">📦</div><h3>Отримуєш з любов'ю</h3><p>Майстер бережно пакує та відправляє замовлення прямо до тебе</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ REVIEWS ═══ -->
+<section class="reviews-section container" id="reviews">
+  <div class="section-row reveal">
+    <div><p class="label section-pretitle">Відгуки клієнтів</p><h2 class="section-h2 display">Що кажуть<br>про Майстерню</h2></div>
+    <button class="btn btn-outline" onclick="openRvModal()">✍️ Залишити відгук</button>
+  </div>
+  <div class="rating-bar-wrap reveal">
+    <div class="rb-score"><div class="rb-big display">4.9</div><div class="rb-stars">★★★★★</div><div class="rb-count" id="rbCount">47 відгуків</div></div>
+    <div class="rb-bars">
+      <div class="rb-row"><span>5★</span><div class="rb-track"><div class="rb-fill" style="width:82%"></div></div><span class="rb-pct">82%</span></div>
+      <div class="rb-row"><span>4★</span><div class="rb-track"><div class="rb-fill" style="width:12%"></div></div><span class="rb-pct">12%</span></div>
+      <div class="rb-row"><span>3★</span><div class="rb-track"><div class="rb-fill" style="width:4%"></div></div><span class="rb-pct">4%</span></div>
+      <div class="rb-row"><span>2★</span><div class="rb-track"><div class="rb-fill" style="width:2%"></div></div><span class="rb-pct">2%</span></div>
+      <div class="rb-row"><span>1★</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span class="rb-pct">0%</span></div>
+    </div>
+    <div class="rb-action"><p>Поділись враженнями</p><button class="btn btn-dark" onclick="openRvModal()">Написати відгук</button></div>
+  </div>
+  <div class="rv-pills" id="rvPills">
+    <button class="rv-pill on" data-r="0">Всі</button>
+    <button class="rv-pill" data-r="5">5 ★</button>
+    <button class="rv-pill" data-r="4">4 ★</button>
+    <button class="rv-pill" data-r="3">3 ★</button>
+  </div>
+  <div class="rv-grid" id="rvGrid"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn btn-outline" id="loadMoreBtn" onclick="loadMoreRv()">Більше відгуків</button>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq-section" id="faq">
+  <div class="container faq-wrap">
+    <div class="faq-layout">
+      <div class="faq-aside">
+        <p class="label">Питання</p>
+        <h2 class="section-h2 display" style="margin:10px 0 0">FAQ</h2>
+        <p>Не знайшов відповіді? Напиши нам — відповімо протягом кількох годин.</p>
+        <a href="#contact" class="btn btn-dark">Написати нам</a>
+        <div class="faq-cats" style="margin-top:24px">
+          <button class="faq-cat on" data-c="all">Всі питання</button>
+          <button class="faq-cat" data-c="order">Замовлення</button>
+          <button class="faq-cat" data-c="delivery">Доставка</button>
+          <button class="faq-cat" data-c="payment">Оплата</button>
+          <button class="faq-cat" data-c="return">Повернення</button>
+          <button class="faq-cat" data-c="product">Товари</button>
+        </div>
+      </div>
+      <div class="faq-list" id="faqList">
+        <div class="faq-item" data-c="order"><button class="faq-q">Як зробити замовлення?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Обери товар у каталозі, натисни «В кошик», потім перейди до оформлення. Вкажи контактні дані та адресу — підтверди. Ми зв'яжемось протягом 1–2 годин.</div></div></div>
+        <div class="faq-item" data-c="order"><button class="faq-q">Чи можна зробити індивідуальне замовлення?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Так! Напиши через форму зворотного зв'язку або в месенджер — опиши побажання, і майстер зробить унікальний виріб спеціально для тебе. Термін: від 3 до 14 днів.</div></div></div>
+        <div class="faq-item" data-c="delivery"><button class="faq-q">Які способи доставки доступні?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Нова Пошта та Укрпошта по всій Україні. Для Києва — кур'єр. Також самовивіз. Термін доставки: 1–3 робочі дні.</div></div></div>
+        <div class="faq-item" data-c="delivery"><button class="faq-q">Скільки коштує доставка?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Нова Пошта — 80 ₴ (від 1500 ₴ безкоштовно). Укрпошта — 50 ₴. Кур'єр по Києву — 120 ₴. Самовивіз — безкоштовно.</div></div></div>
+        <div class="faq-item" data-c="payment"><button class="faq-q">Які способи оплати?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Visa/MasterCard онлайн (LiqPay), накладений платіж, переказ на картку ПриватБанку або monobank.</div></div></div>
+        <div class="faq-item" data-c="payment"><button class="faq-q">Чи безпечна оплата карткою?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Так. Оплата через сертифікований шлюз LiqPay з SSL. Ми не зберігаємо дані картки.</div></div></div>
+        <div class="faq-item" data-c="return"><button class="faq-q">Чи можна повернути товар?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Якщо товар пошкоджений або не відповідає опису — безкоштовний обмін або повернення коштів протягом 14 днів.</div></div></div>
+        <div class="faq-item" data-c="product"><button class="faq-q">Усі вироби справді ручної роботи?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">100%. Кожен майстер проходить перевірку перед публікацією. Жодного масового виробництва.</div></div></div>
+        <div class="faq-item" data-c="product"><button class="faq-q">Чи відрізняється реальний товар від фото?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-in">Можливі незначні відмінності — це природня краса ручної роботи. Якщо хочеш уточнити до замовлення — напиши нам.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AUTO LAYOUT ═══ -->
+<section class="al-section container" id="autolayout">
+  <div class="section-row reveal"><div><p class="label section-pretitle">Auto Layout</p><h2 class="section-h2 display">Гнучка сітка<br>каталогу</h2></div><p style="max-width:320px;font-size:var(--fs-sm);color:var(--ink-60);line-height:1.75">CSS Grid адаптує розкладку товарів в реальному часі — перемикай режими нижче</p></div>
+  <div class="al-controls" id="alControls">
+    <button class="al-pill on" data-m="m-masonry">⊞ Мозаїка</button>
+    <button class="al-pill" data-m="m-feat">★ Головний</button>
+    <button class="al-pill" data-m="m-3">⋮⋮⋮ 3 колонки</button>
+    <button class="al-pill" data-m="m-2">⋮⋮ 2 колонки</button>
+    <button class="al-pill" data-m="m-1">≡ Список</button>
+  </div>
+  <div class="al-grid m-masonry" id="alGrid"></div>
+  <div class="al-footer">
+    <div class="al-stat"><strong id="alCount">12</strong><span>товарів</span></div>
+    <div class="al-stat"><strong id="alMode">авто</strong><span>колонок</span></div>
+    <div class="al-stat"><strong>CSS Grid</strong><span>технологія</span></div>
+    <div class="al-stat"><strong>responsive</strong><span>адаптивність</span></div>
+  </div>
+</section>
+
+<!-- ═══ NEWSLETTER ═══ -->
+<section class="nl-section">
+  <div class="container">
+    <p class="label">Розсилка</p>
+    <h2>Будь першим про <em>новинки</em></h2>
+    <p>Підпишись та отримай знижку 10% на перше замовлення</p>
+    <form class="nl-form" id="nlForm">
+      <input type="email" placeholder="твоя@пошта.ua" required/>
+      <button type="submit" class="btn btn-pop">Підписатись</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="contact-section container" id="contact">
+  <div class="section-row reveal"><div><p class="label section-pretitle">Зв'язок</p><h2 class="section-h2 display">Маєш<br>питання?</h2></div></div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <div class="c-item reveal"><div class="c-ico">📍</div><div><strong>Адреса</strong><p>Київ, Україна</p></div></div>
+      <div class="c-item reveal"><div class="c-ico">📱</div><div><strong>Телефон</strong><p>+38 (097) 123-45-67</p></div></div>
+      <div class="c-item reveal"><div class="c-ico">✉️</div><div><strong>Email</strong><p>hello@maisternya.ua</p></div></div>
+      <div class="c-item reveal"><div class="c-ico">🕐</div><div><strong>Графік</strong><p>Пн–Пт: 9:00–18:00</p></div></div>
+    </div>
+    <form class="c-form" id="contactForm">
+      <div class="c-row">
+        <input type="text" placeholder="Ваше ім'я" required/>
+        <input type="email" placeholder="Email" required/>
+      </div>
+      <input type="text" placeholder="Тема повідомлення"/>
+      <textarea rows="5" placeholder="Ваше повідомлення..." required></textarea>
+      <button type="submit" class="btn btn-dark" style="align-self:flex-start">Надіслати →</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="site-logo" style="font-size:1.2rem">МАЙСТЕР<em>НЯ</em></a>
+        <p>Місце, де народжуються речі з душею. Підтримуємо українських майстрів.</p>
+        <div class="socials">
+          <a href="#" class="soc-btn" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+          <a href="#" class="soc-btn" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="#" class="soc-btn" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="M22 2 11 13"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div class="fc"><h4>Каталог</h4><a href="#">Кераміка</a><a href="#">В'язання</a><a href="#">Декор</a><a href="#">Прикраси</a><a href="#">Живопис</a></div>
+        <div class="fc"><h4>Магазин</h4><a href="#">Про нас</a><a href="#">Майстри</a><a href="#">Доставка</a><a href="#">Повернення</a><a href="#">FAQ</a></div>
+        <div class="fc"><h4>Правове</h4><a href="#">Умови</a><a href="#">Конфіденційність</a><a href="#">Cookies</a></div>
+      </div>
+    </div>
+    <div class="footer-bar"><p>© 2025 Майстерня. Всі права захищені.</p><p>Зроблено з 💛 в Україні</p></div>
+  </div>
+</footer>
+
+<!-- ═══ CART DRAWER ═══ -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-head"><h3>Кошик</h3><button class="ibtn" id="cartClose" style="width:32px;height:32px;border-radius:8px;font-size:1rem;color:var(--ink-60)">✕</button></div>
+  <div class="cart-body" id="cartBody"><div class="cart-empty"><span>🛒</span><p>КОШИК ПОРОЖНІЙ</p></div></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-tot"><span>Разом</span><strong class="display" id="cartTot">0 ₴</strong></div>
+    <button class="btn btn-dark" style="width:100%" onclick="openCheckout()">Оформити замовлення →</button>
+  </div>
+</aside>
+
+<!-- ═══ CHECKOUT ═══ -->
+<div class="ck-modal" id="ckModal">
+  <div class="ck-ov" id="ckOv"></div>
+  <div class="ck-box">
+    <div class="ck-prog" id="ckProg">
+      <div class="ck-dot active" id="ckd0"><div class="ck-circle">1</div><div class="ck-dlabel">Кошик</div></div>
+      <div class="ck-dot" id="ckd1"><div class="ck-circle">2</div><div class="ck-dlabel">Доставка</div></div>
+      <div class="ck-dot" id="ckd2"><div class="ck-circle">3</div><div class="ck-dlabel">Оплата</div></div>
+    </div>
+    <div class="ck-hd"><h3 id="ckTitle">Ваше замовлення</h3><button class="ck-close" onclick="closeCheckout()">✕</button></div>
+    <div class="ck-body">
+      <div class="ck-success" id="ckSuccess">
+        <div class="ck-success-ico">✓</div>
+        <h3>Замовлення прийнято!</h3>
+        <div class="ck-success-emojis" id="ckEmojis" style="font-size:1.6rem;display:flex;gap:8px;flex-wrap:wrap;justify-content:center"></div>
+        <div class="ck-order-num" id="ckOrderNum"></div>
+        <p>Майстер підтвердить протягом 1–2 годин і зв'яжеться з вами для уточнення деталей.</p>
+        <button class="btn btn-dark" onclick="closeCheckout()">Закрити</button>
+      </div>
+      <!-- Step 1 -->
+      <div class="ck-panel on" id="ckP0">
+        <div class="ck-items" id="ckItems"></div>
+        <div class="ck-sum" id="ckSum"></div>
+      </div>
+      <!-- Step 2 -->
+      <div class="ck-panel" id="ckP1">
+        <div class="ck-section"><div class="ck-stitle">👤 КОНТАКТИ</div>
+          <div class="ck-fr"><div class="ck-f"><label>ІМ'Я *</label><input id="ckName" placeholder="Олена"/></div><div class="ck-f"><label>ПРІЗВИЩЕ *</label><input id="ckSurname" placeholder="Ковальчук"/></div></div>
+          <div class="ck-fr"><div class="ck-f"><label>ТЕЛЕФОН *</label><input id="ckPhone" placeholder="+38 (097) 000-00-00"/></div><div class="ck-f"><label>EMAIL *</label><input id="ckEmail" type="email" placeholder="email@example.com"/></div></div>
+        </div>
+        <div class="ck-section"><div class="ck-stitle">🚚 ДОСТАВКА</div>
+          <div class="ck-dels">
+            <label class="ck-del on" data-p="80"><input type="radio" name="del" value="nova" checked/><span class="ck-del-ico">📦</span><div class="ck-del-info"><div class="ck-del-name">Нова Пошта</div><div class="ck-del-desc">1–2 дні · відділення</div></div><div class="ck-del-price">80 ₴</div></label>
+            <label class="ck-del" data-p="50"><input type="radio" name="del" value="ukr"/><span class="ck-del-ico">🏣</span><div class="ck-del-info"><div class="ck-del-name">Укрпошта</div><div class="ck-del-desc">2–5 днів · поштове відділення</div></div><div class="ck-del-price">50 ₴</div></label>
+            <label class="ck-del" data-p="120"><input type="radio" name="del" value="courier"/><span class="ck-del-ico">🛵</span><div class="ck-del-info"><div class="ck-del-name">Кур'єр по Києву</div><div class="ck-del-desc">Сьогодні або завтра · до дверей</div></div><div class="ck-del-price">120 ₴</div></label>
+            <label class="ck-del" data-p="0"><input type="radio" name="del" value="pickup"/><span class="ck-del-ico">🏠</span><div class="ck-del-info"><div class="ck-del-name">Самовивіз</div><div class="ck-del-desc">вул. Хрещатик 22, Київ</div></div><div class="ck-del-price">Безкоштовно</div></label>
+          </div>
+        </div>
+        <div class="ck-section" id="ckAddrSection"><div class="ck-stitle">📍 АДРЕСА</div>
+          <div class="ck-fr"><div class="ck-f"><label>МІСТО *</label><input id="ckCity" placeholder="Київ"/></div><div class="ck-f"><label>ВІДДІЛЕННЯ / АДРЕСА *</label><input id="ckAddr" placeholder="Відділення №1"/></div></div>
+          <div class="ck-f"><label>КОМЕНТАР</label><textarea rows="2" id="ckComment" placeholder="Побажання..."></textarea></div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div class="ck-panel" id="ckP2">
+        <div class="ck-section"><div class="ck-stitle">💳 СПОСІБ ОПЛАТИ</div>
+          <div class="ck-pays">
+            <label class="ck-pay on"><input type="radio" name="pay" value="card" checked/><span class="ck-pay-ico">💳</span><div><div class="ck-pay-name">Карткою онлайн</div><div class="ck-pay-desc">Visa / MC · LiqPay 🔒</div></div></label>
+            <label class="ck-pay"><input type="radio" name="pay" value="cod"/><span class="ck-pay-ico">💵</span><div><div class="ck-pay-name">Накладений платіж</div><div class="ck-pay-desc">Оплата при отриманні</div></div></label>
+            <label class="ck-pay"><input type="radio" name="pay" value="mono"/><span class="ck-pay-ico">📱</span><div><div class="ck-pay-name">monobank / Приват</div><div class="ck-pay-desc">Переказ після підтвердження</div></div></label>
+          </div>
+          <div class="ck-card-f on" id="ckCardF">
+            <div class="ck-f"><label>НОМЕР КАРТКИ</label><input id="ckCNum" placeholder="0000 0000 0000 0000" maxlength="19" style="font-family:'Space Mono',monospace;letter-spacing:.1em"/></div>
+            <div class="ck-card-row">
+              <div class="ck-f"><label>ВЛАСНИК</label><input id="ckCName" placeholder="OLENA KOVALCHUK" style="text-transform:uppercase"/></div>
+              <div class="ck-f"><label>MM/RR</label><input id="ckCExp" placeholder="12/27" maxlength="5"/></div>
+              <div class="ck-f"><label>CVV</label><input id="ckCVV" type="password" placeholder="•••" maxlength="3"/></div>
+            </div>
+          </div>
+        </div>
+        <div class="ck-section"><div class="ck-stitle">🧾 ПІДСУМОК</div><div class="ck-final" id="ckFinal"></div></div>
+      </div>
+    </div>
+    <div class="ck-ft" id="ckFt">
+      <button class="ck-back" id="ckBack" onclick="ckPrev()" style="visibility:hidden">← Назад</button>
+      <button class="btn btn-dark" id="ckNext" onclick="ckNext()">Далі →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REVIEW MODAL ═══ -->
+<div class="rv-modal" id="rvModal">
+  <div class="rv-ov" onclick="closeRvModal()"></div>
+  <div class="rv-box">
+    <div class="rv-mh"><h3>Залишити відгук</h3><button class="ck-close" onclick="closeRvModal()">✕</button></div>
+    <div class="rv-mb">
+      <div class="ck-f"><label>ТОВАР</label><select id="rvProd"><option value="">— оберіть —</option></select></div>
+      <div class="ck-f"><label>ОЦІНКА *</label><div class="sp-wrap" id="spWrap"><span class="sp-s" data-v="1">★</span><span class="sp-s" data-v="2">★</span><span class="sp-s" data-v="3">★</span><span class="sp-s" data-v="4">★</span><span class="sp-s" data-v="5">★</span></div><div class="sp-lbl" id="spLbl">Оберіть оцінку</div></div>
+      <div class="ck-fr"><div class="ck-f"><label>ІМ'Я *</label><input id="rvName" placeholder="Олена"/></div><div class="ck-f"><label>МІСТО</label><input id="rvCity" placeholder="Київ"/></div></div>
+      <div class="ck-f"><label>ВІДГУК *</label><textarea id="rvText" rows="4" placeholder="Розкажіть про враження..."></textarea></div>
+      <div class="ck-f"><label>АВАТАР</label><div class="ep-wrap" id="epWrap"><span class="ep-e on" data-e="😊">😊</span><span class="ep-e" data-e="👩">👩</span><span class="ep-e" data-e="👨">👨</span><span class="ep-e" data-e="👩‍🎨">👩‍🎨</span><span class="ep-e" data-e="🧑‍💻">🧑‍💻</span><span class="ep-e" data-e="👵">👵</span><span class="ep-e" data-e="🧔">🧔</span><span class="ep-e" data-e="👩‍🍳">👩‍🍳</span></div></div>
+    </div>
+    <div class="rv-mf"><button class="ck-back" onclick="closeRvModal()">Скасувати</button><button class="btn btn-dark" onclick="submitRv()">Опублікувати →</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ── DATA ── */
+const PRODUCTS = [
+  {id:1,cat:'ceramic',emoji:'🏺',tc:'tc-a',name:'Керамічна чашка «Ранок»',master:'Оксана Мельник',price:450,old:null,rating:4.9,rev:42,badge:'Хіт'},
+  {id:2,cat:'knit',emoji:'🧣',tc:'tc-b',name:'В\'язаний шарф «Осінь»',master:'Марія Ковальчук',price:680,old:850,rating:4.8,rev:31,badge:'Знижка'},
+  {id:3,cat:'decor',emoji:'🕯️',tc:'tc-c',name:'Аромасвічка «Ліс»',master:'Андрій Білик',price:320,old:null,rating:5.0,rev:18,badge:'Новинка'},
+  {id:4,cat:'jewelry',emoji:'📿',tc:'tc-d',name:'Намисто «Польові квіти»',master:'Дарина Іванова',price:890,old:null,rating:4.7,rev:25,badge:null},
+  {id:5,cat:'art',emoji:'🎨',tc:'tc-c',name:'Акварель «Карпати»',master:'Василь Грищенко',price:1200,old:null,rating:5.0,rev:12,badge:'Ексклюзив'},
+  {id:6,cat:'ceramic',emoji:'🍶',tc:'tc-a',name:'Глечик «Традиція»',master:'Ірина Стець',price:750,old:950,rating:4.9,rev:37,badge:'Знижка'},
+  {id:7,cat:'knit',emoji:'🧤',tc:'tc-b',name:'Рукавиці «Затишок»',master:'Людмила Павленко',price:420,old:null,rating:4.8,rev:22,badge:null},
+  {id:8,cat:'decor',emoji:'🌸',tc:'tc-e',name:'Сухоцвіт «Луки»',master:'Юлія Романова',price:560,old:null,rating:4.6,rev:15,badge:'Новинка'},
+  {id:9,cat:'wood',emoji:'🪵',tc:'tc-f',name:'Обробна дошка',master:'Богдан Сірко',price:980,old:null,rating:4.8,rev:19,badge:null},
+  {id:10,cat:'jewelry',emoji:'💍',tc:'tc-d',name:'Срібний перстень «Вічність»',master:'Аліна Коваль',price:1450,old:null,rating:5.0,rev:8,badge:'Ексклюзив'},
+  {id:11,cat:'art',emoji:'🖼️',tc:'tc-c',name:'Олія «Схід над полем»',master:'Максим Шевченко',price:2200,old:null,rating:4.9,rev:6,badge:null},
+  {id:12,cat:'wood',emoji:'🕰️',tc:'tc-f',name:'Годинник «Ретро»',master:'Богдан Сірко',price:1600,old:2000,rating:4.7,rev:14,badge:'Знижка'},
+];
+
+const MASTERS = [
+  {emoji:'👩‍🎨',name:'Оксана Мельник',spec:'кераміка',cnt:'34 роботи'},
+  {emoji:'👩‍🏫',name:'Марія Ковальчук',spec:'в\'язання',cnt:'28 робіт'},
+  {emoji:'👨‍🎨',name:'Василь Грищенко',spec:'живопис',cnt:'21 робота'},
+  {emoji:'👩‍🔧',name:'Дарина Іванова',spec:'прикраси',cnt:'47 робіт'},
+];
+
+const REVIEWS_DATA = [
+  {id:1,rating:5,name:'Оксана К.',city:'Київ',emoji:'👩',product:'Керамічна чашка «Ранок»',text:'Замовила керамічну чашку — просто витвір мистецтва! Дуже ніжне пакування, відчувається тепло рук майстра.',date:'2 лютого 2025',likes:18,featured:true},
+  {id:2,rating:5,name:'Марія Г.',city:'Львів',emoji:'👩‍🎨',product:'В\'язаний шарф «Осінь»',text:'Шарф став моїм найулюбленішим придбанням. Якість неймовірна, майстриня дуже уважна до деталей.',date:'15 січня 2025',likes:24},
+  {id:3,rating:5,name:'Денис В.',city:'Одеса',emoji:'🧔',product:'Акварель «Карпати»',text:'Купив картину дружині — вона в захваті! Майстер Василь — справжній талант.',date:'28 грудня 2024',likes:11},
+  {id:4,rating:4,name:'Ірина С.',city:'Харків',emoji:'😊',product:'Аромасвічка «Ліс»',text:'Свічка пахне чарівно, атмосфера вдома одразу змінилась. Хотілося б більший розмір, але якість — на висоті!',date:'10 грудня 2024',likes:7},
+  {id:5,rating:5,name:'Тарас М.',city:'Дніпро',emoji:'👨',product:'Годинник «Ретро»',text:'Подарував батьку — він у захваті. Виготовлення ідеальне, кожна деталь відшліфована.',date:'5 грудня 2024',likes:15},
+  {id:6,rating:5,name:'Наталя Б.',city:'Запоріжжя',emoji:'👵',product:'Намисто «Польові квіти»',text:'Намисто перевершило очікування! Дуже красиве та ніжне. Ношу кожен день і отримую компліменти.',date:'22 листопада 2024',likes:9},
+];
+
+const STAR_LABELS = ['','Погано','Задовільно','Непогано','Добре','Відмінно!'];
+
+/* ── STATE ── */
+let cart = [];
+let rvData = [...REVIEWS_DATA];
+let rvShown = 6, rvFilter = 0;
+let ckStep = 0, delPrice = 80, payMethod = 'card';
+let spRating = 0, spEmoji = '😊';
+
+/* ── TOAST ── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), 3000);
+}
+
+/* ── DARK MODE ── */
+(function(){
+  const s = localStorage.getItem('theme');
+  if(s==='dark'||((!s)&&window.matchMedia('(prefers-color-scheme:dark)').matches))
+    document.documentElement.classList.add('dark');
+})();
+
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  const d = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', d?'dark':'light');
+  toast(d?'🌙 Темна тема':'☀️ Світла тема');
+});
+
+/* ── BURGER ── */
+const burger = document.getElementById('burgerBtn');
+const drawer = document.getElementById('mobileDrawer');
+burger.addEventListener('click',()=>{
+  const o = drawer.classList.toggle('open');
+  burger.querySelectorAll('span')[0].style.transform = o?'rotate(45deg) translate(5px,5px)':'';
+  burger.querySelectorAll('span')[1].style.opacity = o?'0':'';
+  burger.querySelectorAll('span')[2].style.transform = o?'rotate(-45deg) translate(5px,-5px)':'';
+});
+drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+  drawer.classList.remove('open');
+  burger.querySelectorAll('span').forEach(s=>{s.style.transform='';s.style.opacity='';});
+}));
+
+/* ── MARQUEE ── */
+(function(){
+  const items = ['Ручна робота','Зроблено в Україні','Унікальні вироби','Підтримай майстрів','Handmade з любов\'ю','Кожна річ — особлива'];
+  const t = document.getElementById('mqTrack');
+  const d = [...items,...items].map(i=>`<div class="marquee-item"><span class="marquee-sep">✦</span>${i}</div>`).join('');
+  t.innerHTML = d;
+})();
+
+/* ── PRODUCTS ── */
+function starStr(r){ return '★'.repeat(Math.floor(r))+(r%1?'½':''); }
+
+function renderProducts(filter='all'){
+  const list = filter==='all'? PRODUCTS : PRODUCTS.filter(p=>p.cat===filter);
+  document.getElementById('prodGrid').innerHTML = list.map((p,i)=>`
+    <article class="prod-card" style="animation-delay:${i*.06}s">
+      <div class="prod-thumb ${p.tc}">
+        ${p.badge?`<span class="prod-badge">${p.badge}</span>`:''}
+        <button class="prod-wish" id="w${p.id}" onclick="toggleWish(this,${p.id})">♡</button>
+        <span style="position:relative">${p.emoji}</span>
+      </div>
+      <div class="prod-info">
+        <div class="prod-master mono">${p.master}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-rating">
+          <span class="prod-stars">${starStr(p.rating)}</span>
+          <span class="prod-rev">(${p.rev})</span>
+        </div>
+        <div class="prod-foot">
+          <div class="prod-price">${p.old?`<span class="prod-old">${p.old}₴</span>`:''}${p.price} ₴</div>
+          <button class="prod-add" onclick="addToCart(${p.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            В кошик
+          </button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function toggleWish(btn,id){
+  btn.classList.toggle('on');
+  btn.textContent = btn.classList.contains('on')?'♥':'♡';
+  toast(btn.classList.contains('on')?'Додано до обраних ❤️':'Видалено з обраних');
+}
+
+document.getElementById('filterRow').addEventListener('click',e=>{
+  const p = e.target.closest('.fpill');
+  if(!p) return;
+  document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+  renderProducts(p.dataset.f);
+});
+
+/* ── MASTERS ── */
+function renderMasters(){
+  document.getElementById('mastersGrid').innerHTML = MASTERS.map(m=>`
+    <div class="master-card reveal">
+      <div class="master-av">${m.emoji}</div>
+      <div class="master-name">${m.name}</div>
+      <div class="master-spec mono">${m.spec}</div>
+      <div class="master-cnt">${m.cnt}</div>
+    </div>`).join('');
+}
+
+/* ── CART ── */
+function addToCart(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  const ex = cart.find(x=>x.id===id);
+  ex? ex.qty++ : cart.push({...p,qty:1});
+  syncCart();
+  toast(`«${p.name}» — додано 🛒`);
+  openCart();
+}
+
+function removeFromCart(id){ cart=cart.filter(x=>x.id!==id); syncCart(); }
+
+function syncCart(){
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('cartDot').textContent = count;
+  const body = document.getElementById('cartBody');
+  const foot = document.getElementById('cartFoot');
+  if(!cart.length){
+    body.innerHTML='<div class="cart-empty"><span>🛒</span><p>КОШИК ПОРОЖНІЙ</p></div>';
+    foot.style.display='none'; return;
+  }
+  body.innerHTML=cart.map(i=>`
+    <div class="ci">
+      <div class="ci-thumb">${i.emoji}</div>
+      <div class="ci-info">
+        <div class="ci-name">${i.name}</div>
+        <div class="ci-price">${i.qty}×${i.price} = ${i.qty*i.price} ₴</div>
+      </div>
+      <button class="ci-rm" onclick="removeFromCart(${i.id})">✕</button>
+    </div>`).join('');
+  foot.style.display='block';
+  document.getElementById('cartTot').textContent = total.toLocaleString('uk-UA')+' ₴';
+}
+
+function openCart(){
+  document.getElementById('cartDrawer').classList.add('on');
+  document.getElementById('cartOverlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeCart(){
+  document.getElementById('cartDrawer').classList.remove('on');
+  document.getElementById('cartOverlay').classList.remove('on');
+  document.body.style.overflow='';
+}
+document.getElementById('cartBtn').addEventListener('click',openCart);
+document.getElementById('cartClose').addEventListener('click',closeCart);
+document.getElementById('cartOverlay').addEventListener('click',closeCart);
+
+/* ── CHECKOUT ── */
+const CK_TITLES = ['Ваше замовлення','Дані та доставка','Оплата'];
+
+function openCheckout(){
+  if(!cart.length){toast('Кошик порожній');return;}
+  closeCart();
+  ckStep=0; renderCk();
+  document.getElementById('ckModal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeCheckout(){
+  document.getElementById('ckModal').classList.remove('on');
+  document.body.style.overflow='';
+  setTimeout(()=>{
+    ckStep=0;
+    document.getElementById('ckSuccess').classList.remove('on');
+    document.getElementById('ckFt').style.display='';
+    document.getElementById('ckProg').style.display='';
+    renderCk();
+  },400);
+}
+document.getElementById('ckOv').addEventListener('click',closeCheckout);
+
+function renderCk(){
+  [0,1,2].forEach(i=>{
+    const dot=document.getElementById('ckd'+i);
+    dot.className='ck-dot'+(i===ckStep?' active':i<ckStep?' done':'');
+    dot.querySelector('.ck-circle').textContent=i<ckStep?'✓':(i+1);
+  });
+  document.getElementById('ckTitle').textContent=CK_TITLES[ckStep]||'';
+  document.querySelectorAll('.ck-panel').forEach((p,i)=>p.classList.toggle('on',i===ckStep));
+  const back=document.getElementById('ckBack');
+  back.style.visibility=ckStep?'visible':'hidden';
+  document.getElementById('ckNext').textContent=ckStep===2?'Підтвердити ✓':'Далі →';
+  if(ckStep===0) renderCkStep0();
+  if(ckStep===2) renderCkFinal();
+}
+
+function renderCkStep0(){
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('ckItems').innerHTML=cart.map(i=>`
+    <div class="ck-row">
+      <div class="ck-em">${i.emoji}</div>
+      <div><div class="ck-nm">${i.name}</div><div class="ck-ms">${i.master}</div></div>
+      <div class="ck-qty">
+        <button class="ck-qb" onclick="ckQty(${i.id},-1)">−</button>
+        <div class="ck-qn">${i.qty}</div>
+        <button class="ck-qb" onclick="ckQty(${i.id},+1)">+</button>
+      </div>
+      <div class="ck-pr">${(i.price*i.qty).toLocaleString('uk-UA')} ₴</div>
+    </div>`).join('');
+  document.getElementById('ckSum').innerHTML=`
+    <div class="ck-sr"><span>Товари (${cart.reduce((s,i)=>s+i.qty,0)} шт.)</span><span>${sub.toLocaleString('uk-UA')} ₴</span></div>
+    <div class="ck-sr"><span>Доставка</span><span id="ckDelLine">${delPrice?delPrice+' ₴':'Безкоштовно'}</span></div>
+    <div class="ck-sr tot"><span>Разом</span><strong>${(sub+delPrice).toLocaleString('uk-UA')} ₴</strong></div>`;
+}
+
+function ckQty(id,d){
+  const i=cart.find(x=>x.id===id);
+  if(!i) return;
+  i.qty=Math.max(1,i.qty+d);
+  syncCart(); renderCkStep0();
+}
+
+function renderCkFinal(){
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tot=sub+delPrice;
+  const dv=document.querySelector('input[name=del]:checked')?.value||'nova';
+  const dl={nova:'Нова Пошта',ukr:'Укрпошта',courier:'Кур\'єр',pickup:'Самовивіз'}[dv];
+  const pl={card:'Карткою онлайн',cod:'Накладений платіж',mono:'monobank/Приват'}[payMethod]||'';
+  document.getElementById('ckFinal').innerHTML=
+    cart.map(i=>`<div class="ck-final-r"><span>${i.emoji} ${i.name} ×${i.qty}</span><span>${(i.price*i.qty).toLocaleString('uk-UA')} ₴</span></div>`).join('')+
+    `<div class="ck-final-r"><span>Доставка (${dl})</span><span>${delPrice?delPrice+' ₴':'Безкоштовно'}</span></div>`+
+    `<div class="ck-final-r"><span>Оплата</span><span>${pl}</span></div>`+
+    `<div class="ck-final-r big"><span>Загальна сума</span><strong>${tot.toLocaleString('uk-UA')} ₴</strong></div>`;
+}
+
+function ckNext(){
+  if(ckStep===0){
+    if(!cart.length){toast('Додайте товари');return;}
+    ckStep=1; renderCk(); return;
+  }
+  if(ckStep===1){
+    const fields=[{id:'ckName',l:'ім\'я'},{id:'ckSurname',l:'прізвище'},{id:'ckPhone',l:'телефон'},{id:'ckEmail',l:'email'}];
+    const pickup=document.querySelector('input[name=del]:checked')?.value==='pickup';
+    if(!pickup){fields.push({id:'ckCity',l:'місто'},{id:'ckAddr',l:'адресу'});}
+    let err=false;
+    fields.forEach(f=>{
+      const el=document.getElementById(f.id);
+      if(!el?.value.trim()){el?.classList.add('err');setTimeout(()=>el?.classList.remove('err'),2000);if(!err){toast('Введіть '+f.l+' 👆');err=true;}}
+    });
+    if(err) return;
+    ckStep=2; renderCk(); return;
+  }
+  if(ckStep===2){
+    if(payMethod==='card'){
+      const n=document.getElementById('ckCNum')?.value.replace(/\s/g,'');
+      const nm=document.getElementById('ckCName')?.value.trim();
+      const e=document.getElementById('ckCExp')?.value.trim();
+      const c=document.getElementById('ckCVV')?.value.trim();
+      if(!n||n.length<16||!nm||!e||e.length<4||!c||c.length<3){toast('Перевірте дані картки 💳');return;}
+    }
+    submitOrder();
+  }
+}
+
+function ckPrev(){ if(ckStep>0){ckStep--;renderCk();} }
+
+function submitOrder(){
+  const num='МАЙ-'+Math.floor(Math.random()*90000+10000);
+  document.querySelectorAll('.ck-panel').forEach(p=>p.classList.remove('on'));
+  const s=document.getElementById('ckSuccess'); s.classList.add('on');
+  document.getElementById('ckFt').style.display='none';
+  document.getElementById('ckProg').style.display='none';
+  document.getElementById('ckTitle').textContent='';
+  document.getElementById('ckOrderNum').textContent='№ '+num;
+  document.getElementById('ckEmojis').textContent=cart.map(i=>i.emoji).join(' ');
+  cart=[]; syncCart();
+}
+
+/* delivery/payment toggle */
+document.addEventListener('change',e=>{
+  if(e.target.name==='del'){
+    document.querySelectorAll('.ck-del').forEach(d=>d.classList.remove('on'));
+    e.target.closest('.ck-del').classList.add('on');
+    delPrice=parseInt(e.target.closest('.ck-del').dataset.p)||0;
+    const as=document.getElementById('ckAddrSection');
+    if(as) as.style.display=e.target.value==='pickup'?'none':'';
+    renderCkStep0();
+  }
+  if(e.target.name==='pay'){
+    document.querySelectorAll('.ck-pay').forEach(p=>p.classList.remove('on'));
+    e.target.closest('.ck-pay').classList.add('on');
+    payMethod=e.target.value;
+    document.getElementById('ckCardF')?.classList.toggle('on',payMethod==='card');
+  }
+});
+
+document.addEventListener('input',e=>{
+  if(e.target.id==='ckCNum'){
+    let v=e.target.value.replace(/\D/g,'').slice(0,16);
+    e.target.value=v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  if(e.target.id==='ckCExp'){
+    let v=e.target.value.replace(/\D/g,'').slice(0,4);
+    if(v.length>=3) v=v.slice(0,2)+'/'+v.slice(2);
+    e.target.value=v;
+  }
+});
+
+/* ── PROCESS ── */
+(function(){
+  const steps=document.querySelectorAll('.proc-step');
+  const fill=document.getElementById('procFill');
+  const details=document.querySelectorAll('.proc-detail');
+
+  const obs=new IntersectionObserver(e=>{if(e[0].isIntersecting)fill.classList.add('go');},{threshold:.3});
+  const sec=document.querySelector('.process-section');
+  if(sec) obs.observe(sec);
+
+  function activate(i){
+    steps.forEach((s,j)=>s.classList.toggle('on',j===i));
+    details.forEach((d,j)=>d.classList.toggle('on',j===i));
+  }
+  steps.forEach((s,i)=>{
+    s.addEventListener('click',()=>activate(i));
+    s.addEventListener('mouseenter',()=>activate(i));
+  });
+})();
+
+/* ── REVIEWS ── */
+function renderRv(){
+  const filtered=rvFilter===0?rvData:rvData.filter(r=>r.rating===rvFilter);
+  const visible=filtered.slice(0,rvShown);
+  document.getElementById('rvGrid').innerHTML=visible.map((r,i)=>`
+    <div class="rv-card${r.featured?' featured':''}${r.isNew?' new-rv':''}" style="animation-delay:${i*.05}s">
+      <div class="rv-head">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="rv-stars">${'★'.repeat(r.rating)}</span>
+          <span style="font-size:.7rem;font-family:var(--f-mono);color:var(--ink-30)">${r.rating}.0</span>
+        </div>
+        ${r.featured?'<span class="rv-badge">✦ Топ</span>':''}
+        ${r.isNew?'<span class="rv-badge">Новий</span>':''}
+      </div>
+      ${r.product?`<div class="rv-product">${r.product}</div>`:''}
+      <p class="rv-text">«${r.text}»</p>
+      <div class="rv-author">
+        <div class="rv-av">${r.emoji}</div>
+        <div class="rv-ainfo"><strong>${r.name}</strong><span>${r.city}</span><div class="rv-date">${r.date}</div></div>
+        <button class="rv-like" onclick="likeRv(${r.id},this)">♡ ${r.likes}</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('loadMoreBtn').style.display=filtered.length>rvShown?'':'none';
+  document.getElementById('rbCount').textContent=rvData.length+' відгуків';
+}
+
+function likeRv(id,btn){
+  const r=rvData.find(x=>x.id===id);
+  if(!r) return;
+  btn.classList.toggle('on');
+  r.likes+=btn.classList.contains('on')?1:-1;
+  btn.textContent='♥ '+r.likes;
+  if(!btn.classList.contains('on')) btn.textContent='♡ '+r.likes;
+}
+
+function loadMoreRv(){ rvShown+=3; renderRv(); }
+
+document.getElementById('rvPills').addEventListener('click',e=>{
+  const p=e.target.closest('.rv-pill');
+  if(!p) return;
+  document.querySelectorAll('.rv-pill').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+  rvFilter=parseInt(p.dataset.r);
+  rvShown=6; renderRv();
+});
+
+/* review form */
+let spR=0,spE='😊';
+
+function openRvModal(){
+  const sel=document.getElementById('rvProd');
+  if(sel.options.length<=1) PRODUCTS.forEach(p=>{const o=document.createElement('option');o.value=p.name;o.textContent=p.emoji+' '+p.name;sel.appendChild(o);});
+  document.getElementById('rvModal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeRvModal(){
+  document.getElementById('rvModal').classList.remove('on');
+  document.body.style.overflow='';
+  spR=0;spE='😊';
+  document.querySelectorAll('.sp-s').forEach(s=>s.classList.remove('on','hov'));
+  document.querySelectorAll('.ep-e').forEach(e=>e.classList.remove('on'));
+  document.querySelector('.ep-e[data-e="😊"]')?.classList.add('on');
+  document.getElementById('spLbl').textContent='Оберіть оцінку';
+  ['rvName','rvCity','rvText'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('rvProd').value='';
+}
+
+function submitRv(){
+  const name=document.getElementById('rvName')?.value.trim();
+  const text=document.getElementById('rvText')?.value.trim();
+  const prod=document.getElementById('rvProd')?.value;
+  const city=document.getElementById('rvCity')?.value.trim()||'Україна';
+  if(!name){toast('Введіть ім\'я');return;}
+  if(!spR){toast('Оберіть оцінку ⭐');return;}
+  if(!text||text.length<10){toast('Напишіть відгук (мін. 10 символів)');return;}
+  const d=new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'});
+  rvData.unshift({id:Date.now(),rating:spR,name,city,emoji:spE,product:prod||null,text,date:d,likes:0,isNew:true});
+  rvShown=Math.min(rvShown+1,rvData.length);
+  closeRvModal(); renderRv();
+  document.getElementById('reviews')?.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>toast('✅ Відгук опубліковано!'),600);
+}
+
+/* star picker */
+document.getElementById('spWrap').addEventListener('mouseover',e=>{
+  const s=e.target.closest('.sp-s');
+  if(!s) return;
+  const v=parseInt(s.dataset.v);
+  document.querySelectorAll('.sp-s').forEach((x,i)=>x.classList.toggle('hov',i<v));
+  document.getElementById('spLbl').textContent=STAR_LABELS[v];
+});
+document.getElementById('spWrap').addEventListener('mouseleave',()=>{
+  document.querySelectorAll('.sp-s').forEach(s=>s.classList.remove('hov'));
+  document.getElementById('spLbl').textContent=spR?STAR_LABELS[spR]:'Оберіть оцінку';
+});
+document.getElementById('spWrap').addEventListener('click',e=>{
+  const s=e.target.closest('.sp-s');
+  if(!s) return;
+  spR=parseInt(s.dataset.v);
+  document.querySelectorAll('.sp-s').forEach((x,i)=>x.classList.toggle('on',i<spR));
+  document.getElementById('spLbl').textContent=STAR_LABELS[spR];
+});
+
+/* emoji picker */
+document.getElementById('epWrap').addEventListener('click',e=>{
+  const it=e.target.closest('.ep-e');
+  if(!it) return;
+  document.querySelectorAll('.ep-e').forEach(x=>x.classList.remove('on'));
+  it.classList.add('on');
+  spE=it.dataset.e;
+});
+
+/* ── FAQ ── */
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');
+  if(!q) return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+});
+
+document.querySelectorAll('.faq-cat').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.faq-cat').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on');
+  const cat=c.dataset.c;
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const show=cat==='all'||item.dataset.c===cat;
+    item.style.display=show?'':'none';
+    if(!show) item.classList.remove('open');
+  });
+}));
+
+/* ── AUTO LAYOUT ── */
+const AL_MODES={'m-masonry':'авто','m-feat':'4','m-3':'3','m-2':'2','m-1':'1'};
+let alMode='m-masonry';
+
+function renderAl(){
+  const grid=document.getElementById('alGrid');
+  grid.innerHTML=PRODUCTS.map((p,i)=>`
+    <div class="al-c" style="animation-delay:${i*.03}s">
+      <div class="al-thumb ${p.tc}">${p.emoji}</div>
+      <div class="al-body">
+        <div class="al-name">${p.name}</div>
+        <div class="al-price">${p.price} ₴</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('alCount').textContent=PRODUCTS.length;
+  document.getElementById('alMode').textContent=AL_MODES[alMode]||'авто';
+}
+
+document.getElementById('alControls').addEventListener('click',e=>{
+  const p=e.target.closest('.al-pill');
+  if(!p) return;
+  document.querySelectorAll('.al-pill').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+  const grid=document.getElementById('alGrid');
+  grid.classList.remove(alMode);
+  alMode=p.dataset.m;
+  grid.classList.add(alMode);
+  renderAl();
+});
+
+/* ── SCROLL REVEAL ── */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add('vis');});
+},{threshold:.1});
+
+function initReveal(){
+  document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+}
+
+/* ── HEADER SCROLL ── */
+window.addEventListener('scroll',()=>{
+  document.querySelector('.site-header').style.borderBottomColor=
+    window.scrollY>20?'var(--ink-10)':'transparent';
+},{passive:true});
+
+/* ── FORMS ── */
+document.getElementById('nlForm').addEventListener('submit',e=>{
+  e.preventDefault(); toast('Дякуємо! Підписка оформлена 🎉'); e.target.reset();
+});
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault(); toast('Повідомлення надіслано! Відповімо скоро 💬'); e.target.reset();
+});
+
+/* ── INIT ── */
+renderProducts();
+renderMasters();
+syncCart();
+renderRv();
+renderAl();
+initReveal();
+setTimeout(initReveal,200);
+</script>
+</body>
+</html>
